@@ -20,13 +20,6 @@ jobs:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         resourceGroupName: ${{ secrets.AZURE_RG }}
         template: ./azuredeploy.json
-        parameters: appServiceName= webAppGitDep99,
-                    appServicePlanName= appPlanGitDep99,
-                    alwaysOn= true,
-                    maxPercentageCpu= 100,
-                    maxMemoryInMb=2048,
-                    maxDiskSizeInMb=1024,
-                    umbracoSiteExtensionFeed=$umbracoSiteExtensionFeed$
                     
       # output containerName variable from template
     - run: echo ${{ steps.deploy.outputs.containerName }}
