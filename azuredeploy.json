@@ -1,0 +1,119 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appServiceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Web app name."
+      },
+      "minLength": 2
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "Web app name."
+      },
+      "minLength": 2
+    },
+    "alwaysOn": {
+      "type": "string",
+      "metadata": {
+        "description": "Always on."
+      }
+    },
+    "maxPercentageCpu": {
+      "type": "string",
+      "metadata": {
+        "description": "Max cpu usage in app service plan, percentage."
+      }
+    },
+    "maxMemoryInMb": {
+      "type": "string",
+      "metadata": {
+        "description": "Max memory usage in app service plan in mbytes."
+      }
+    },
+    "maxDiskSizeInMb": {
+      "type": "string",
+      "metadata": {
+        "description": "Max disk usage in app service plan in mbytes."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "umbracoSiteExtensionFeed": {
+      "type": "string",
+      "metadata": {
+        "description": "Umbraco private site extension feed"
+      }
+    }
+  },
+  "variables": {
+    "appServicePlanName": "[parameters('appServicePlanName')]",
+    "alwaysOn": "[bool(parameters('alwaysOn'))]",
+    "maxPercentageCpu": "[int(parameters('maxPercentageCpu'))]",
+    "maxMemoryInMb": "[int(parameters('maxMemoryInMb'))]",
+    "maxDiskSizeInMb": "[int(parameters('maxDiskSizeInMb'))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2020-06-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[parameters('appServiceName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "name": "[parameters('appServiceName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+      },
+      "resources": [
+        {
+
+          "apiVersion": "2015-08-01",
+          "name": "web",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('appServiceName'))]"
+          ],
+          "properties": {
+            "httpsOnly": true,
+            "netFrameworkVersion": "v4.8",
+            "scmType": "LocalGit",
+            "use32BitWorkerProcess": false,
+            "webSocketsEnabled": true,
+            "alwaysOn": "[variables('alwaysOn')]",
+            "limits": {
+              "maxPercentageCpu": "[variables('maxPercentageCpu')]",
+              "maxMemoryInMb": "[variables('maxMemoryInMb')]",
+              "maxDiskSizeInMb": "[variables('maxDiskSizeInMb')]"
+            },
+            "minTlsVersion": "1.2",
+            "scmMinTlsVersion": "1.2",
+            "http20Enabled": true
+          }
+        },
+        {
+          "name": "appsettings",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('appServiceName'))]",
+            "[resourceId('Microsoft.Web/Sites/config', parameters('appServiceName'), 'web')]"
+          ],
+          "properties": {
+            "SCM_SITEEXTENSIONS_FEED_URL": "[parameters('umbracoSiteExtensionFeed')]",
+            "SCM_USE_LIBGIT2SHARP_REPOSITORY": "0",
+            "SCM_CREATE_APP_OFFLINE": "0",
+            "SCM_SCRIPT_GENERATOR_ARGS": "--basic",
+            "COMMAND": "C:\\home\\SiteExtensions\\Umbraco.Cloud.Deployment.SiteExtension.Artifacts\\deploy.cmd"
+          }
+        }
+      ]
+    }
+  ]
+}

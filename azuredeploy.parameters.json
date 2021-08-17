@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    
+      "appServiceName": {
+        "value": "webAppGitDep99"
+      },
+      "appServicePlanName": {
+        "value": "appPlanGitDep99"
+      },
+      "alwaysOn": {
+        "value": "true"
+      },
+      "maxPercentageCpu": {
+        "value": "100"
+      },
+      "maxMemoryInMb": {
+        "value": "2048"
+      },
+      "maxDiskSizeInMb": {
+        "value": "1024"
+      },
+      "umbracoSiteExtensionFeed": {
+        "value": "$umbracoSiteExtensionFeed$"
+      }
+  }
+}
