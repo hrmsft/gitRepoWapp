@@ -8,7 +8,7 @@
         "description": "Web app name."
       },
       "minLength": 2
-    },
+    }, 
     "appServicePlanName": {
       "type": "string",
       "metadata": {
@@ -46,7 +46,7 @@
       "metadata": {
         "description": "Location for all resources."
       }
-    },
+    }, 
     "umbracoSiteExtensionFeed": {
       "type": "string",
       "metadata": {
